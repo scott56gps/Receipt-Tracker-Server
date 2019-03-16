@@ -1,0 +1,14 @@
+{
+  "name": "receipt_tracker_server",
+  "version": "1.0.0",
+  "description": "Server for Web Engineering II Project 2",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Scott Nicholes",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
