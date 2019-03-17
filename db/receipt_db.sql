@@ -4,7 +4,7 @@ CREATE TABLE receipt (
     id SERIAL PRIMARY KEY,
     vendor_name VARCHAR(100) NOT NULL,
     date DATE,
-    total FLOAT(10, 2)
+    total NUMERIC(10, 2)
 );
 
 CREATE TABLE item (
@@ -12,7 +12,7 @@ CREATE TABLE item (
     receipt_id INTEGER REFERENCES receipt(id) NOT NULL,
     name VARCHAR(100) NOT NULL,
     quantity INTEGER,
-    amount FLOAT(10, 2)
+    amount NUMERIC(10, 2)
 );
 
 INSERT INTO receipt (vendor_name, date, total) VALUES (
