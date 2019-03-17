@@ -9,7 +9,7 @@ const receiptController = require('./controllers/receipt-controller');
 // Set up JSON body parsing
 app.use(express.json());
 
-app.get('/receipts', handleReceipts);
+app.get('/receipts', receiptController.handleGetReceipts);
 
 app.listen(port, function () {
     console.log('Server now listening on port ' + port);
