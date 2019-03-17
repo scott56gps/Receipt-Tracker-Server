@@ -15,24 +15,16 @@ CREATE TABLE item (
     amount FLOAT(10, 2)
 );
 
-INSERT INTO receipt (first_name, last_name, birth_date) VALUES (
-    'Nellie',
-    'Nicholes',
-    '1993-12-11'
+INSERT INTO receipt (vendor_name, date, total) VALUES (
+    'Walmart',
+    '2019-01-13',
+    23.43
 ), (
-    'Scott',
-    'Nicholes',
-    '1993-08-09'
+    'WinCo',
+    '2019-02-23',
+    89.65
 ), (
-    'Echo',
-    'Nicholes',
-    '2019-01-13'
-);
-
-INSERT INTO parent_child (parent_id, child_id) VALUES (
-    1,
-    3
-), (
-    2,
-    3
+    'Walmart',
+    '2019-02-11',
+    55.23
 );
