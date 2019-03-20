@@ -11,6 +11,8 @@ app.use(express.json());
 
 app.get('/receipts', receiptController.handleGetReceipts);
 
+app.get('/receipt/:id', receiptController.handleGetReceipt);
+
 app.listen(port, function () {
     console.log('Server now listening on port ' + port);
 })
