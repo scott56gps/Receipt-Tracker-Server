@@ -11,7 +11,7 @@ function getReceipts(request, response) {
     })
 }
 
-function handleGetReceipt(request, response) {
+function getReceipt(request, response) {
     var requestId = request.params.id;
     receiptModels.getReceiptModel(requestId, function (err, receipt) {
         if (err) {
@@ -20,9 +20,10 @@ function handleGetReceipt(request, response) {
         }
 
         response.json(receipt);
-    }
+    })
 }
 
 module.exports = {
-    handleGetReceipts: getReceipts
+    handleGetReceipts: getReceipts,
+    handleGetReceipt: getReceipt
 }
