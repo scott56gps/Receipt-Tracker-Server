@@ -28,3 +28,10 @@ INSERT INTO receipt (vendor_name, date, total) VALUES (
     '2019-02-11',
     55.23
 );
+
+INSERT INTO item (receipt_id, name, quantity, amount) VALUES (
+    1,
+    'Soap',
+    2,
+    7.85
+);
