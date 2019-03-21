@@ -37,6 +37,15 @@ function postReceipt(request, response) {
         total: total,
         items: items
     }
+
+    receiptModels.createReceipt(receiptDto, (err, receipt) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        response.json(receipt);
+    })
 }
 
 module.exports = {

@@ -1,3 +1,4 @@
+const format = require('pg-format')
 const { Pool } = require('pg');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -57,35 +58,58 @@ function getReceipt(receiptId, callback) {
     })
 }
 
-function createOneReceipt(vendorName, date, total, items, callback) {
+function createReceipt(receipt, callback) {
     var query = {
         text: 'INSERT INTO receipt (vendor_name, date, total) VALUES ($1, $2, $3) RETURNING *',
-        values: [vendorName, date, total]
+        values: [receipt.vendorName, receipt.date, receipt.total]
     }
 
-    queryDatabase(query, (err, result) => {
+    queryDatabase(query, (err, receiptResponse) => {
+        if (err) {
+            callback(err);
+            return;
+        }
+        
+        if (items) {
+            createItems(items, (itemsError) => {
+                if (itemsError) {
+                    callback(err);
+                    return;
+                }
+
+                callback(null, receiptResponse.rows[0])
+            })
+        } else {
+            callback(null, receiptResponse.rows[0])
+            return;
+        }
+    })
+}
+
+function createItems(items, callback) {
+    // We shall create an array of arrays for the params.
+    // The format is: [[name, quantity, amount], [name, quantity, amount]] == (name, quantity, amount), (name, quantity, amount)
+    var values = [];
+    // Iterate through the items
+    items.forEach((item) => {
+        values.push([item.name, item.quantity, item.amount]);
+    });
+
+    var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
+
+    queryDatabase(query, (err) => {
         if (err) {
             callback(err);
             return;
         }
 
-        
-        if (items) {
-            // Iteraate through the items
-            items.forEach((item) => {
-                
-            })
-            query = {
-                text: 'INSERT INTO receipt (vendor_name, date, total) VALUES ($1, $2, $3) RETURNING *',
-                values: [vendorName, date, total]
-            }
-        }
-
-        callback(null, )
+        callback(null)
+        return;
     })
 }
 
 module.exports = {
     getReceiptsModel: getReceipts,
-    getReceiptModel: getReceipt
+    getReceiptModel: getReceipt,
+    createReceipt: createReceipt
 }
