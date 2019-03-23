@@ -58,6 +58,28 @@ function getReceipt(receiptId, callback) {
     })
 }
 
+function createItems(items, callback) {
+    // We shall create an array of arrays for the params.
+    // The format is: [[name, quantity, amount], [name, quantity, amount]] == (name, quantity, amount), (name, quantity, amount)
+    var values = [];
+    // Iterate through the items
+    items.forEach((item) => {
+        values.push([item.name, item.quantity, item.amount]);
+    });
+
+    var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
+
+    queryDatabase(query, (err) => {
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        callback(null)
+        return;
+    })
+}
+
 function createReceipt(receipt, callback) {
     var query = {
         text: 'INSERT INTO receipt (vendor_name, date, total) VALUES ($1, $2, $3) RETURNING *',
@@ -78,33 +100,12 @@ function createReceipt(receipt, callback) {
                 }
 
                 callback(null, receiptResponse.rows[0])
+                return;
             })
         } else {
             callback(null, receiptResponse.rows[0])
             return;
         }
-    })
-}
-
-function createItems(items, callback) {
-    // We shall create an array of arrays for the params.
-    // The format is: [[name, quantity, amount], [name, quantity, amount]] == (name, quantity, amount), (name, quantity, amount)
-    var values = [];
-    // Iterate through the items
-    items.forEach((item) => {
-        values.push([item.name, item.quantity, item.amount]);
-    });
-
-    var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
-
-    queryDatabase(query, (err) => {
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        callback(null)
-        return;
     })
 }
 
