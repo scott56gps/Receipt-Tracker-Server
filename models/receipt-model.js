@@ -71,7 +71,7 @@ function createReceipt(receipt, callback) {
         }
         
         if (receipt.items) {
-            createItems(items, (itemsError) => {
+            createItems(receipt.items, (itemsError) => {
                 if (itemsError) {
                     callback(err);
                     return;
