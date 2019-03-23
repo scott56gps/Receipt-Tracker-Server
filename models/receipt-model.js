@@ -70,7 +70,7 @@ function createReceipt(receipt, callback) {
             return;
         }
         
-        if (items) {
+        if (receipt.items) {
             createItems(items, (itemsError) => {
                 if (itemsError) {
                     callback(err);
