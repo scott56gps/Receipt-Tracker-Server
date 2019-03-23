@@ -132,14 +132,12 @@ function createReceipt(receipt, callback) {
     
                     // Release the db client
                     done();
-                    callback(null, receiptResponse.rows[0]);
-                    return;
+                    return callback(null, receiptResponse.rows[0]);
                 })
             } else {
                 // Release the db client
                 done();
-                callback(null, receiptResponse.rows[0])
-                return;
+                return callback(null, receiptResponse.rows[0]);
             }
         })
     })
