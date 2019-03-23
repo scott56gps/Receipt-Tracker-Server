@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS parent_child, person;
+DROP TABLE IF EXISTS receipt, item;
 
 CREATE TABLE receipt (
     id SERIAL PRIMARY KEY,
