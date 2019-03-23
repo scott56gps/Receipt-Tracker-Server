@@ -5,25 +5,24 @@ const pool = new Pool({
     ssl: true
 });
 
-function queryDatabase(query, callback) {
-    // Connect to the database by checking out a client
+function connectToDatabase(callback) {
     pool.connect(function (connectError, client, done) {
         if (connectError) {
             callback(connectError);
         }
 
-        // Query the Database
-        client.query(query, function (queryError, queryResult) {
-            // Release the client from the pool, since we just used it and we
-            //  have no need for it at the current moment.
-            done();
+        callback(null, client, done);
+    });
+}
 
-            if (queryError) {
-                callback(queryError);
-            }
+function queryDatabase(query, client, callback) {
+    // Query the Database
+    client.query(query, function (queryError, queryResult) {
+        if (queryError) {
+            callback(queryError);
+        }
 
-            callback(null, queryResult)
-        })
+        callback(null, queryResult)
     })
 }
 
@@ -33,12 +32,24 @@ function getReceipts(callback) {
         text: 'SELECT id, vendor_name, date, total FROM receipt'
     }
 
-    queryDatabase(query, (err, result) => {
-        if (err) {
-            callback(err);
+    connectToDatabase((connectionError, client, done) => {
+        if (connectionError) {
+            callback(connectionError);
             return;
         }
-        callback(null, result.rows);
+
+        queryDatabase(query, client, (err, result) => {
+            if (err) {
+                done();
+                callback(err);
+                return;
+            }
+
+            // Release the db client
+            done();
+            callback(null, result.rows);
+            return;
+        })
     })
 }
 
@@ -49,16 +60,27 @@ function getReceipt(receiptId, callback) {
         values: [receiptId]
     }
 
-    queryDatabase(query, (err, result) => {
-        if (err) {
-            callback(err);
+    connectToDatabase((connectionError, client, done) => {
+        if (connectionError) {
+            callback(connectionError);
             return;
         }
-        callback(null, result.rows[0]);
+
+        queryDatabase(query, client, (err, result) => {
+            if (err) {
+                done();
+                callback(err);
+                return;
+            }
+
+            // Release the db client
+            done();
+            callback(null, result.rows[0]);
+        })
     })
 }
 
-function createItems(items, callback) {
+function createItems(items, client, done, callback) {
     // We shall create an array of arrays for the params.
     // The format is: [[name, quantity, amount], [name, quantity, amount]] == (name, quantity, amount), (name, quantity, amount)
     var values = [];
@@ -69,12 +91,14 @@ function createItems(items, callback) {
     
     var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
 
-    queryDatabase(query, (err) => {
+    queryDatabase(query, client, (err) => {
         if (err) {
+            done();
             callback(err);
             return;
         }
 
+        done();
         callback(null)
         return;
     })
@@ -86,26 +110,38 @@ function createReceipt(receipt, callback) {
         values: [receipt.vendorName, receipt.date, receipt.total]
     }
 
-    queryDatabase(query, (err, receiptResponse) => {
-        if (err) {
-            callback(err);
+    // Connect to the database
+    connectToDatabase((connectionError, client, done) => {
+        if (connectionError) {
+            callback(connectionError);
             return;
         }
-        
-        if (receipt.items) {
-            createItems(receipt.items, (itemsError) => {
-                if (itemsError) {
-                    callback(err);
-                    return;
-                }
 
+        queryDatabase(query, client, (err, receiptResponse) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+            
+            if (receipt.items) {
+                createItems(receipt.items, client, done, (itemsError) => {
+                    if (itemsError) {
+                        callback(err);
+                        return;
+                    }
+    
+                    // Release the db client
+                    done();
+                    callback(null, receiptResponse.rows[0]);
+                    return;
+                })
+            } else {
+                // Release the db client
+                done();
                 callback(null, receiptResponse.rows[0])
                 return;
-            })
-        } else {
-            callback(null, receiptResponse.rows[0])
-            return;
-        }
+            }
+        })
     })
 }
 
