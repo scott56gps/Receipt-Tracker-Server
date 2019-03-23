@@ -66,8 +66,10 @@ function createItems(items, callback) {
     items.forEach((item) => {
         values.push([item.name, item.quantity, item.amount]);
     });
-
+    
+    console.log("values", values);
     var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
+    console.log("query", query);
 
     queryDatabase(query, (err) => {
         if (err) {
@@ -93,7 +95,6 @@ function createReceipt(receipt, callback) {
         }
         
         if (receipt.items) {
-            console.log("items", receipt.items);
             createItems(receipt.items, (itemsError) => {
                 if (itemsError) {
                     callback(err);
