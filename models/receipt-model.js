@@ -93,6 +93,7 @@ function createReceipt(receipt, callback) {
         }
         
         if (receipt.items) {
+            console.log("items", receipt.items);
             createItems(receipt.items, (itemsError) => {
                 if (itemsError) {
                     callback(err);
