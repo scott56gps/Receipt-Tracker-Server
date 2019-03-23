@@ -67,9 +67,7 @@ function createItems(items, callback) {
         values.push([item.name, item.quantity, item.amount]);
     });
     
-    console.log("values", values);
     var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
-    console.log("query", query);
 
     queryDatabase(query, (err) => {
         if (err) {
