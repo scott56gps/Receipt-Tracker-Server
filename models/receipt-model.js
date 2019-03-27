@@ -98,13 +98,13 @@ function getReceipt(receiptId, callback) {
     })
 }
 
-function createItems(items, client, callback) {
+function createItems(receiptId, items, client, callback) {
     // We shall create an array of arrays for the params.
     // The format is: [[name, quantity, amount], [name, quantity, amount]] == (name, quantity, amount), (name, quantity, amount)
     var values = [];
     // Iterate through the items
     items.forEach((item) => {
-        values.push([item.name, item.quantity, item.amount]);
+        values.push([receiptId, item.name, item.quantity, item.amount]);
     });
     
     var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
@@ -144,7 +144,7 @@ function createReceipt(receipt, callback) {
             done()
             
             if (receipt.items) {
-                createItems(receipt.items, client, (itemsError) => {
+                createItems(receiptResponse.rows[0].id, receipt.items, client, (itemsError) => {
                     if (itemsError) {
                         console.log('ERROR!!!!')
                         console.log(itemsError)
