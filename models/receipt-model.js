@@ -99,14 +99,14 @@ function createItems(items, client, done, callback) {
         }
 
         done();
-        callback(null)
+        callback()
         return;
     })
 }
 
 function createReceipt(receipt, callback) {
     var query = {
-        text: 'INSERT INTO receipt (vendor_name, date, total) VALUES ($1, $2, $3) RETURNING *',
+        text: 'INSERT INTO receipt (vendor_name, date, total) VALUES ($1, $2, $3) RETURNING id, vendor_name, date, total',
         values: [receipt.vendorName, receipt.date, receipt.total]
     }
 
@@ -132,13 +132,45 @@ function createReceipt(receipt, callback) {
     
                     // Release the db client
                     done();
-                    return callback(null, receiptResponse.rows[0]);
+                    callback(null, receiptResponse.rows[0]);
                 })
             } else {
                 // Release the db client
                 done();
-                return callback(null, receiptResponse.rows[0]);
+                callback(null, receiptResponse.rows[0]);
             }
+        })
+    })
+}
+
+/**
+ * UPDATE RECEIPT
+ * Updates the receipt in the database with the corresponding passed in receipt.
+ * 
+ * @param {ReceiptDTO} receipt The object with which to update the database for.  Must include a valid
+ * Database id for an existing receipt.
+ * @param {Function} callback The function to call with the updated receipt
+ */
+function updateReceipt(receipt, callback) {
+    connectToDatabase((connectionError, client, done) => {
+        if (connectionError) {
+            callback(connectionError)
+            return;
+        }
+
+        var query = {
+            text: 'UPDATE receipt SET vendor_name = $1, date = $2, total = $3 WHERE id = $4 RETURNING id, vendor_name, date, total',
+            values: [receipt.vendorName, receipt.date, receipt.total, receipt.id]
+        }
+
+        queryDatabase(query, client, (err, receiptResponse) => {
+            if (err) {
+                callback(err)
+                return;
+            }
+
+            done()
+            callback(null, receiptResponse.rows[0])
         })
     })
 }
@@ -146,5 +178,6 @@ function createReceipt(receipt, callback) {
 module.exports = {
     getReceiptsModel: getReceipts,
     getReceiptModel: getReceipt,
-    createReceipt: createReceipt
+    createReceipt: createReceipt,
+    updateReceipt: updateReceipt
 }

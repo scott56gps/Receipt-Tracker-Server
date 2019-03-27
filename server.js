@@ -13,6 +13,7 @@ app.get('/receipts', receiptController.handleGetReceipts);
 app.get('/receipt/:id', receiptController.handleGetReceipt);
 
 app.post('/receipt', receiptController.handlePostReceipt);
+app.put('/receipt', receiptController.handleUpdateReceipt);
 
 app.listen(port, function () {
     console.log('Server now listening on port ' + port);

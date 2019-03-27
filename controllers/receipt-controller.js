@@ -1,7 +1,7 @@
-const receiptModels = require('../models/receipt-model');
+const receiptModel = require('../models/receipt-model');
 
 function getReceipts(request, response) {
-    receiptModels.getReceiptsModel(function (err, receipts) {
+    receiptModel.getReceiptsModel(function (err, receipts) {
         if (err) {
             console.error(err);
             return;
@@ -13,7 +13,7 @@ function getReceipts(request, response) {
 
 function getReceipt(request, response) {
     var requestId = request.params.id;
-    receiptModels.getReceiptModel(requestId, function (err, receipt) {
+    receiptModel.getReceiptModel(requestId, function (err, receipt) {
         if (err) {
             console.error(err);
             return;
@@ -38,7 +38,7 @@ function postReceipt(request, response) {
         items: items
     }
 
-    receiptModels.createReceipt(receiptDto, (err, receipt) => {
+    receiptModel.createReceipt(receiptDto, (err, receipt) => {
         if (err) {
             console.error(err);
             return;
@@ -48,8 +48,35 @@ function postReceipt(request, response) {
     })
 }
 
+function updateReceipt(request, response) {
+    // Parse the variables from the PUT request body
+    var id = request.body.id;
+    var vendorName = request.body.vendorName;
+    var date = request.body.date;
+    var total = request.body.total;
+    var items = request.body.items;
+
+    var receiptDto = {
+        id: id,
+        vendorName: vendorName,
+        date: date,
+        total: total,
+        items: items
+    }
+
+    receiptModel.updateReceipt(receiptDto, (err, receipt) => {
+        if (err) {
+            console.log(err)
+            response.status(500).json({ success: false, error: err });
+        }
+
+        response.json(receipt)
+    })
+}
+
 module.exports = {
     handleGetReceipts: getReceipts,
     handleGetReceipt: getReceipt,
-    handlePostReceipt: postReceipt
+    handlePostReceipt: postReceipt,
+    handleUpdateReceipt: updateReceipt
 }
