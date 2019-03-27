@@ -66,7 +66,7 @@ function getReceipt(receiptId, callback) {
             return;
         }
 
-        queryDatabase(query, client, (receiptErr, result) => {
+        queryDatabase(query, client, (receiptErr, receiptResult) => {
             if (receiptErr) {
                 done();
                 callback(err);
@@ -74,7 +74,7 @@ function getReceipt(receiptId, callback) {
             }
 
             // Create receipt with result data
-            var receipt = result.rows[0];
+            var receipt = receiptResult.rows[0];
 
             // Get the items
             query = {
@@ -82,14 +82,14 @@ function getReceipt(receiptId, callback) {
                 values: [receiptId]
             }
 
-            queryDatabase(query, client, (itemsError, items) => {
+            queryDatabase(query, client, (itemsError, itemsResult) => {
                 if (itemsError) {
                     done();
                     callback(itemsError);
                     return;
                 }
 
-                receipt.items = items
+                receipt.items = itemsResult.rows
 
                 done();
                 callback(null, receipt);
