@@ -115,7 +115,7 @@ function createItems(items, client, callback) {
             return;
         }
 
-        callback()
+        callback();
         return;
     })
 }
@@ -129,15 +129,19 @@ function createReceipt(receipt, callback) {
     // Connect to the database
     connectToDatabase((connectionError, client, done) => {
         if (connectionError) {
+            done()
             callback(connectionError);
             return;
         }
 
         queryDatabase(query, client, (err, receiptResponse) => {
             if (err) {
+                done()
                 callback(err);
                 return;
             }
+
+            done()
             
             if (receipt.items) {
                 createItems(receipt.items, client, (itemsError) => {
@@ -152,8 +156,6 @@ function createReceipt(receipt, callback) {
                     callback(null, receiptResponse.rows[0]);
                 })
             } else {
-                // Release the db client
-                done();
                 callback(null, receiptResponse.rows[0]);
             }
         })
