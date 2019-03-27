@@ -54,16 +54,16 @@ function getReceipts(callback) {
 }
 
 function getReceipt(receiptId, callback) {
-    // Create a query object
-    var query = {
-        text: 'SELECT id, vendor_name, date, total FROM receipt WHERE id = $1',
-        values: [receiptId]
-    }
-
     connectToDatabase((connectionError, client, done) => {
         if (connectionError) {
             callback(connectionError);
             return;
+        }
+
+        // Create a query object
+        var query = {
+            text: 'SELECT id, vendor_name, date, total FROM receipt WHERE id = $1',
+            values: [receiptId]
         }
 
         queryDatabase(query, client, (receiptErr, receiptResult) => {
@@ -194,9 +194,47 @@ function updateReceipt(receipt, callback) {
     })
 }
 
+function deleteReceipt(receiptId, callback) {
+    connectToDatabase((connectionError, client, done) => {
+        if (connectionError) {
+            callback(connectionError)
+            return;
+        }
+
+        var query = {
+            text: 'DELETE FROM item WHERE receipt_id = $1',
+            values: [receiptId]
+        }
+
+        queryDatabase(query, client, (itemError) => {
+            if (itemError) {
+                callback(itemError)
+                return;
+            }
+
+            done()
+
+            query = {
+                text: 'DELETE FROM receipt WHERE id = $1',
+                values: [receiptId]
+            }
+
+            queryDatabase(query, client, (receiptError) => {
+                if (receiptError) {
+                    callback(receiptError)
+                    return;
+                }
+
+                callback()
+            })
+        })
+    })
+}
+
 module.exports = {
     getReceiptsModel: getReceipts,
     getReceiptModel: getReceipt,
     createReceipt: createReceipt,
-    updateReceipt: updateReceipt
+    updateReceipt: updateReceipt,
+    deleteReceipt: deleteReceipt
 }

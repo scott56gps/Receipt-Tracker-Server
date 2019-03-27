@@ -75,9 +75,25 @@ function updateReceipt(request, response) {
     })
 }
 
+function deleteReceipt(request, response) {
+    // Parse the receipt id from the request
+    var receiptId = request.params.id
+
+    receiptModel.deleteReceipt(receiptId, (error) => {
+        if (error) {
+            console.log(error)
+            response.status(500).json({ success: false, error: error })
+            return;
+        }
+
+        response.json({ success: true })
+    })
+}
+
 module.exports = {
     handleGetReceipts: getReceipts,
     handleGetReceipt: getReceipt,
     handlePostReceipt: postReceipt,
-    handleUpdateReceipt: updateReceipt
+    handleUpdateReceipt: updateReceipt,
+    handleDeleteReceipt: deleteReceipt
 }
