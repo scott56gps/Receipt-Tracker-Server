@@ -8,12 +8,19 @@ const receiptController = require('./controllers/receipt-controller');
 
 // Set up JSON body parsing
 app.use(express.json());
+app.use(logRequest);
 
 app.get('/receipts', receiptController.handleGetReceipts);
 app.get('/receipt/:id', receiptController.handleGetReceipt);
 
 app.post('/receipt', receiptController.handlePostReceipt);
 app.put('/receipt', receiptController.handleUpdateReceipt);
+
+// Middleware
+function logRequest(request, response, next) {
+    console.log('Received ' + request.method + ' request for: ' + request.url);
+    next();
+}
 
 app.listen(port, function () {
     console.log('Server now listening on port ' + port);
