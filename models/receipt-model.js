@@ -94,15 +94,11 @@ function getReceipt(receiptId, callback) {
                 done();
                 callback(null, receipt);
             })
-
-            // // Release the db client
-            // done();
-            // callback(null, result.rows[0]);
         })
     })
 }
 
-function createItems(items, client, done, callback) {
+function createItems(items, client, callback) {
     // We shall create an array of arrays for the params.
     // The format is: [[name, quantity, amount], [name, quantity, amount]] == (name, quantity, amount), (name, quantity, amount)
     var values = [];
@@ -115,12 +111,10 @@ function createItems(items, client, done, callback) {
 
     queryDatabase(query, client, (err) => {
         if (err) {
-            done();
             callback(err);
             return;
         }
 
-        done();
         callback()
         return;
     })
@@ -146,8 +140,9 @@ function createReceipt(receipt, callback) {
             }
             
             if (receipt.items) {
-                createItems(receipt.items, client, done, (itemsError) => {
+                createItems(receipt.items, client, (itemsError) => {
                     if (itemsError) {
+                        done();
                         callback(err);
                         return;
                     }
