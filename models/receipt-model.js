@@ -146,8 +146,6 @@ function createReceipt(receipt, callback) {
             if (receipt.items) {
                 createItems(receiptResponse.rows[0].id, receipt.items, client, (itemsError) => {
                     if (itemsError) {
-                        console.log('ERROR!!!!')
-                        console.log(itemsError)
                         done();
                         callback(err);
                         return;
