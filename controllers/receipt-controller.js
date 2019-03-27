@@ -41,6 +41,7 @@ function postReceipt(request, response) {
     receiptModel.createReceipt(receiptDto, (err, receipt) => {
         if (err) {
             console.error(err);
+            response.status(500).json({ success: false, error: err })
             return;
         }
 
