@@ -66,16 +66,38 @@ function getReceipt(receiptId, callback) {
             return;
         }
 
-        queryDatabase(query, client, (err, result) => {
-            if (err) {
+        queryDatabase(query, client, (receiptErr, result) => {
+            if (receiptErr) {
                 done();
                 callback(err);
                 return;
             }
 
-            // Release the db client
-            done();
-            callback(null, result.rows[0]);
+            // Create receipt with result data
+            var receipt = result.rows[0];
+
+            // Get the items
+            query = {
+                text: 'SELECT name, quantity, amount FROM item WHERE receipt_id = $1',
+                values: [receiptId]
+            }
+
+            queryDatabase(query, client, (itemsError, items) => {
+                if (itemsError) {
+                    done();
+                    callback(itemsError);
+                    return;
+                }
+
+                receipt.items = items
+
+                done();
+                callback(null, receipt);
+            })
+
+            // // Release the db client
+            // done();
+            // callback(null, result.rows[0]);
         })
     })
 }
