@@ -107,15 +107,15 @@ function createItems(receiptId, items, client, callback) {
         values.push([receiptId, item.name, item.quantity, item.amount]);
     });
     
-    var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L', values);
+    var query = format('INSERT INTO item (receipt_id, name, quantity, amount) VALUES %L RETURNING receipt_id, name, quantity, amount', values);
 
-    queryDatabase(query, client, (err) => {
+    queryDatabase(query, client, (err, items) => {
         if (err) {
             callback(err);
             return;
         }
 
-        callback();
+        callback(null, items.rows);
         return;
     })
 }
@@ -144,7 +144,7 @@ function createReceipt(receipt, callback) {
             done()
             
             if (receipt.items) {
-                createItems(receiptResponse.rows[0].id, receipt.items, client, (itemsError) => {
+                createItems(receiptResponse.rows[0].id, receipt.items, client, (itemsError, items) => {
                     if (itemsError) {
                         done();
                         callback(err);
@@ -153,7 +153,13 @@ function createReceipt(receipt, callback) {
     
                     // Release the db client
                     done();
-                    callback(null, receiptResponse.rows[0]);
+
+                    // Put the items on the receipt
+                    var returnReceipt = receiptResponse.rows[0]
+                    returnReceipt.items = items
+
+                    // Return the full receipt
+                    callback(null, returnReceipt);
                 })
             } else {
                 callback(null, receiptResponse.rows[0]);
