@@ -51,7 +51,7 @@ function postReceipt(request, response) {
 
 function updateReceipt(request, response) {
     // Parse the variables from the PUT request body
-    var id = request.body.id;
+    var id = request.params.id;
     var vendorName = request.body.vendorName;
     var date = request.body.date;
     var total = request.body.total;

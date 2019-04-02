@@ -8,13 +8,13 @@ const receiptController = require('./controllers/receipt-controller');
 
 // Set up JSON body parsing
 app.use(express.json());
-app.use(logRequest)
+app.use(logRequest);
 
 app.get('/receipts', receiptController.handleGetReceipts);
 app.get('/receipt/:id', receiptController.handleGetReceipt);
 
 app.post('/receipt', receiptController.handlePostReceipt);
-app.put('/receipt', receiptController.handleUpdateReceipt);
+app.put('/receipt/:id', receiptController.handleUpdateReceipt);
 
 app.delete('/receipt/:id', receiptController.handleDeleteReceipt)
 
