@@ -16,7 +16,7 @@ app.get('/receipt/:id', receiptController.handleGetReceipt);
 app.post('/receipt', receiptController.handlePostReceipt);
 app.put('/receipt/:id', receiptController.handleUpdateReceipt);
 
-app.delete('/receipt/:id', receiptController.handleDeleteReceipt)
+app.delete('/receipt/:id', receiptController.handleDeleteReceipt);
 
 // Middleware
 function logRequest(request, response, next) {
